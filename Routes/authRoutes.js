@@ -19,8 +19,10 @@ authRoutes.post("/register", async (req, res) => {
     const saved = await loginSchema(login).save();
 
     const reg = {
-      phone: req.body.phone,
+    phone: req.body.phone,
       place: req.body.place,
+      name: req.body.name,
+      email: req.body.email,
       loginId: saved._id,
     };
     const saves = await registerSchema(reg).save();
