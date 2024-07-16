@@ -2,10 +2,11 @@ var express=require('express')
 var mongoose=require('mongoose')
 const userSchema = require('../Models/userSchema')
 const loginSchema = require('../Models/loginSchema')
+const auth = require("../middlewares/auth");
 
 var userRoutes=express.Router()
 
-userRoutes.post('/addblog',async(req,res)=>{
+userRoutes.post('/addblog',auth,async(req,res)=>{
     const add={
         title:req.body.title,
         content:req.body.content,
@@ -29,7 +30,7 @@ userRoutes.post('/addblog',async(req,res)=>{
     }
 })
 
-userRoutes.get('/viewblog',async(req,res)=>{
+userRoutes.get('/viewblog',auth,async(req,res)=>{
     const view=await userSchema.find()
     if(view){
         return res.status(200).json({
@@ -48,7 +49,7 @@ userRoutes.get('/viewblog',async(req,res)=>{
     }
 })
 
-userRoutes.get('/viewsingle/:id',async(req,res)=>{
+userRoutes.get('/viewsingle/:id',auth,async(req,res)=>{
     const singleview=await userSchema.findOne({_id:req.params.id})
     if(singleview){
         return res.status(200).json({
@@ -68,7 +69,7 @@ userRoutes.get('/viewsingle/:id',async(req,res)=>{
 })
 
 
-userRoutes.put('/updateblog/:id',async(req,res)=>{
+userRoutes.put('/updateblog/:id',auth,async(req,res)=>{
     const olddata=await userSchema.findOne({_id:req.params.id})
     const newdata={
         title:req.body.title?req.body.title:olddata.title,
@@ -95,7 +96,7 @@ userRoutes.put('/updateblog/:id',async(req,res)=>{
     }
 })
 
-userRoutes.delete('/delete/:id',async(req,res)=>{
+userRoutes.delete('/delete/:id',auth,async(req,res)=>{
     const deleted=await userSchema.deleteOne({_id:req.params.id})
     if(deleted){
         return res.status(200).json({
@@ -113,7 +114,7 @@ userRoutes.delete('/delete/:id',async(req,res)=>{
     }
 })
 
-userRoutes.get('/viewsame/:name',async(req,res)=>{
+userRoutes.get('/viewsame/:name',auth,async(req,res)=>{
     const nameview=await userSchema.find({author:req.params.name})
     if(nameview){
         res.status(200).json({
