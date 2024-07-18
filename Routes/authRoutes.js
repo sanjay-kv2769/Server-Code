@@ -76,10 +76,7 @@ authRoutes.post("/login", async (req, res) => {
           userId: checkEmail._id,
           email: checkEmail.email,
         },
-        process.env.JWT_KEY,
-        {
-          expiresIn: "3h",
-        }
+        process.env.JWT_KEY
       );
 
       return res.status(200).json({
