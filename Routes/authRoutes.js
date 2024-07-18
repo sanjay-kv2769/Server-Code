@@ -78,7 +78,7 @@ authRoutes.post("/login", async (req, res) => {
         },
         process.env.JWT_KEY,
         {
-          expiresIn: "1h",
+          expiresIn: "3h",
         }
       );
 
