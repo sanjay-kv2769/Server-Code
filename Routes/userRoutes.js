@@ -3,6 +3,7 @@ var mongoose=require('mongoose')
 const userSchema = require('../Models/userSchema')
 const loginSchema = require('../Models/loginSchema')
 const auth = require("../middlewares/auth");
+const multer = require('multer')
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
