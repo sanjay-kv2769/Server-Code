@@ -3,15 +3,31 @@ var mongoose=require('mongoose')
 const userSchema = require('../Models/userSchema')
 const loginSchema = require('../Models/loginSchema')
 const auth = require("../middlewares/auth");
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
 var userRoutes=express.Router()
 
-userRoutes.post('/addblog',auth,async(req,res)=>{
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.CLOUD_KEY,
+  api_secret: process.env.CLOUD_SECRET,
+});
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'sampleproject',
+  },
+});
+const upload = multer({ storage: storage });
+
+userRoutes.post('/addblog',auth,upload.single('image'),async(req,res)=>{
     const add={
         title:req.body.title,
         content:req.body.content,
         author:req.body.author,
         timestamp:req.body.timestamp,
+        image:req.file.path,
     }
     const save=await userSchema(add).save()
     if(save){
@@ -69,14 +85,15 @@ userRoutes.get('/viewsingle/:id',auth,async(req,res)=>{
 })
 
 
-userRoutes.put('/updateblog/:id',auth,async(req,res)=>{
+userRoutes.put('/updateblog/:id',auth,upload.single('image'),async(req,res)=>{
     const olddata=await userSchema.findOne({_id:req.params.id})
-    const newdata={
-        title:req.body.title?req.body.title:olddata.title,
-        content:req.body.content?req.body.content:olddata.content,
-        author:req.body.author?req.body.author:olddata.author,
-        timestamp:req.body.timestamp?req.body.timestamp:olddata.timestamp
-    }
+    const newdata = {
+      title: req.body.title ? req.body.title : olddata.title,
+      content: req.body.content ? req.body.content : olddata.content,
+      author: req.body.author ? req.body.author : olddata.author,
+      timestamp: req.body.timestamp ? req.body.timestamp : olddata.timestamp,
+      image: req.file.path ? req.file.path : olddata.image,
+    };
     const update=await userSchema.updateOne({_id:req.params.id},{$set:newdata})
     if(update){
         return res.status(200).json({
