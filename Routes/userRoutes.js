@@ -23,27 +23,37 @@ const storage = new CloudinaryStorage({
 const upload = multer({ storage: storage });
 
 userRoutes.post('/addblog', auth, upload.single('image'), async (req, res) => {
-  const add = {
-    title: req.body.title,
-    content: req.body.content,
-    author: req.body.author,
-    timestamp: req.body.timestamp,
-    image: req.file ? req.file.path : null,
-  };
-  const save = await userSchema(add).save();
-  if (save) {
-    return res.status(201).json({
-      success: true,
-      error: false,
-      message: 'save successfully',
-    });
-  } else {
-    return res.status(400).json({
-      success: false,
-      error: true,
-      message: 'save error',
-    });
-  }
+    try {
+      const add = {
+        title: req.body.title,
+        content: req.body.content,
+        author: req.body.author,
+        timestamp: req.body.timestamp,
+        image: req.file ? req.file.path : null,
+      };
+      const save = await userSchema(add).save();
+      if (save) {
+        return res.status(201).json({
+          success: true,
+          error: false,
+          message: 'save successfully',
+        });
+      } else {
+        return res.status(400).json({
+          success: false,
+          error: true,
+          message: 'save error',
+        });
+      }
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+          success: false,
+          error: true,
+          Errormessage: error,
+          message: 'save error',
+        }); 
+    }
 });
 
 userRoutes.get('/viewblog', auth, async (req, res) => {
